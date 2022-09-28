@@ -156,8 +156,18 @@ public class QLND extends javax.swing.JFrame {
         });
 
         btnSua.setText("Sua");
+        btnSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSuaActionPerformed(evt);
+            }
+        });
 
         btnXoa.setText("Xoa");
+        btnXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaActionPerformed(evt);
+            }
+        });
 
         btnSapXep.setText("Sap xep");
 
@@ -302,32 +312,7 @@ public class QLND extends javax.swing.JFrame {
         // TODO add your handling code here:
         // Neu kiem tra du lieu dung
         if (kiemTraDuLieu()) {
-            NguoiDung nd = new NguoiDung();
-            // Gan du lieu txtTaiKhoan cho thuoc tinh tentaikhoan
-            nd.setTenTaiKhoan(txtTaiKhoan.getText());
-            // Gan du lieu txtEmail cho thuoc tinh email
-            nd.setEmail(txtEmail.getText());
-            // Gan du lieu txtMatKhau cho thuoc tinh mk
-            nd.setMatKhau(txtMatKhau.getText());
-            // Gan du lieu quyen cho thuoc tinh quyen
-            if (rdoUser.isSelected()) {
-                nd.setQuyen(1);
-            } else {
-                nd.setQuyen(2);
-            }
-//            nd.setQuyen(rdoUser.isSelected() ? 1 : 2);
-            if (rdoNam.isSelected()) {
-                nd.setGioiTinh("Nam");
-            } else if (rdoNu.isSelected()) {
-                nd.setGioiTinh("Nu");
-            } else {
-                nd.setGioiTinh("Gioi tinh khac");
-            }
-//            nd.setGioiTinh(rdoNam.isSelected() ? "Nam" 
-//                    : rdoNu.isSelected() ? "Nu" : "Gioi tinh khac");
-             nd.setTrangThai(chkTrangThai.isSelected());
-             
-             nd.setViTriCV(cboViTriCv.getSelectedItem().toString());
+           NguoiDung nd = getDuLieuTuForm();
              
 //             NguoiDung nd1 = new NguoiDung(txtTaiKhoan.getText(), 
 //                     txtMatKhau.getText(), txtEmail.getText(), 
@@ -350,6 +335,38 @@ public class QLND extends javax.swing.JFrame {
             doDuLieuLenForm(rowIndex);
         }
     }//GEN-LAST:event_tblListNDMouseClicked
+
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+        // TODO add your handling code here:
+        int rowSelected = tblListND.getSelectedRow();
+        if (rowSelected >= 0) {
+            // Lay gia tri moi tu form
+            NguoiDung item = getDuLieuTuForm();
+            // Update gia tri doi tuong moi vao DS
+            service.update(item, rowSelected);
+            // Do du lieu ds moi len bang
+            doDuLieu();
+        } else {
+            JOptionPane.showMessageDialog(this, "Chon dong can sua");
+        }
+    }//GEN-LAST:event_btnSuaActionPerformed
+
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        // TODO add your handling code here:
+        if (tblListND.getSelectedRow() >= 0) {
+            int result = JOptionPane.showConfirmDialog(this, "Ban co chac chan muon xoa ban ghi nay khong");
+            // 0: co; 1: ko; 2: cancel
+            System.out.println(result);
+            if (result == 0) {
+                // goi service de xoa du lieu
+                service.delete(tblListND.getSelectedRow());
+                // do du lieu len bang
+                doDuLieu();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Chon dong can xoa");
+        }
+    }//GEN-LAST:event_btnXoaActionPerformed
     private void doDuLieuLenForm(int rowIndex) {
             // Lay doi tuong nguoi dung tu index
            NguoiDung nd = listND.get(rowIndex);
@@ -400,6 +417,37 @@ public class QLND extends javax.swing.JFrame {
                 return false;
             } 
             return true;
+     }
+     
+     private NguoiDung getDuLieuTuForm() {
+           NguoiDung nd = new NguoiDung();
+            // Gan du lieu txtTaiKhoan cho thuoc tinh tentaikhoan
+            nd.setTenTaiKhoan(txtTaiKhoan.getText());
+            // Gan du lieu txtEmail cho thuoc tinh email
+            nd.setEmail(txtEmail.getText());
+            // Gan du lieu txtMatKhau cho thuoc tinh mk
+            nd.setMatKhau(txtMatKhau.getText());
+            // Gan du lieu quyen cho thuoc tinh quyen
+            if (rdoUser.isSelected()) {
+                nd.setQuyen(1);
+            } else {
+                nd.setQuyen(2);
+            }
+//            nd.setQuyen(rdoUser.isSelected() ? 1 : 2);
+            if (rdoNam.isSelected()) {
+                nd.setGioiTinh("Nam");
+            } else if (rdoNu.isSelected()) {
+                nd.setGioiTinh("Nu");
+            } else {
+                nd.setGioiTinh("Gioi tinh khac");
+            }
+//            nd.setGioiTinh(rdoNam.isSelected() ? "Nam" 
+//                    : rdoNu.isSelected() ? "Nu" : "Gioi tinh khac");
+             nd.setTrangThai(chkTrangThai.isSelected());
+             
+             nd.setViTriCV(cboViTriCv.getSelectedItem().toString());
+             
+             return nd;
      }
     /**
      * @param args the command line arguments

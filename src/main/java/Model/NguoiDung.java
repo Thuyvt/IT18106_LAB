@@ -4,6 +4,8 @@
  */
 package Model;
 
+import java.util.Objects;
+
 /**
  *
  * @author ThuyVT
@@ -86,7 +88,5 @@ public class NguoiDung {
     public void setViTriCV(String viTriCV) {
         this.viTriCV = viTriCV;
     }
-    
-    
     
 }
