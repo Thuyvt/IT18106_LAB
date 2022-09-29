@@ -10,7 +10,7 @@ import java.util.Objects;
  *
  * @author ThuyVT
  */
-public class NguoiDung {
+public class NguoiDung implements Comparable<NguoiDung> {
 
     private String tenTaiKhoan;
     private String matKhau;
@@ -88,5 +88,49 @@ public class NguoiDung {
     public void setViTriCV(String viTriCV) {
         this.viTriCV = viTriCV;
     }
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NguoiDung other = (NguoiDung) obj;
+        if (this.quyen != other.quyen) {
+            return false;
+        }
+        if (this.trangThai != other.trangThai) {
+            return false;
+        }
+        if (!Objects.equals(this.tenTaiKhoan, other.tenTaiKhoan)) {
+            return false;
+        }
+        if (!Objects.equals(this.matKhau, other.matKhau)) {
+            return false;
+        }
+        if (!Objects.equals(this.email, other.email)) {
+            return false;
+        }
+        if (!Objects.equals(this.gioiTinh, other.gioiTinh)) {
+            return false;
+        }
+        return Objects.equals(this.viTriCV, other.viTriCV);
+    }
+
+    @Override
+    public int compareTo(NguoiDung o) {
+        return this.getTenTaiKhoan().compareTo(o.getTenTaiKhoan());
+    }
+
 }
