@@ -5,10 +5,18 @@
 package Service;
 
 import Model.NguoiDung;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -53,6 +61,42 @@ public class NDService {
     public void delete(int index) {
         listNguoiDung.remove(index);
     }
-
-
+    
+    public boolean ghi() {
+        try {
+            FileOutputStream fos = new FileOutputStream("ghiFile.txt");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            
+            oos.writeObject(listNguoiDung);
+            oos.close();
+            fos.close();
+            
+            return true;
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(NDService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(NDService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public boolean doc() {
+        try {
+            FileInputStream fis = new FileInputStream("ghiFile.txt");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            
+            listNguoiDung = (List<NguoiDung>) ois.readObject();
+            ois.close();
+            fis.close();
+            return true;
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(NDService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(NDService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(NDService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 }

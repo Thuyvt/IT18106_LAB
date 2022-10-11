@@ -6,8 +6,12 @@ package View;
 
 import Model.NguoiDung;
 import Service.NDService;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -15,21 +19,25 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author ThuyVT
  */
-public class QLND extends javax.swing.JFrame {
+public class QLND extends javax.swing.JFrame implements Runnable {
+
     List<NguoiDung> listND = new ArrayList<>();
     NDService service = new NDService();
     DefaultTableModel defaultTableModel = new DefaultTableModel();
-   
+
     /**
      * Creates new form QLND
      */
     public QLND() {
         initComponents();
-        
+
         // gan gia tri cho defaulTable Model
         defaultTableModel = (DefaultTableModel) tblListND.getModel();
-        
+
         doDuLieu();
+        // tao luong
+        Thread th = new Thread(this);
+        th.start();
     }
 
     /**
@@ -43,7 +51,7 @@ public class QLND extends javax.swing.JFrame {
 
         btnGRole = new javax.swing.ButtonGroup();
         btnGGioiTinh = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
+        lblTieuDe = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -69,11 +77,14 @@ public class QLND extends javax.swing.JFrame {
         btnXoa = new javax.swing.JButton();
         btnSapXep = new javax.swing.JButton();
         btnTim = new javax.swing.JButton();
+        lblDongHo = new javax.swing.JLabel();
+        btnGhi = new javax.swing.JButton();
+        btnDoc = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("QUAN LY NGUOI DUNG");
+        lblTieuDe.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblTieuDe.setText("QUAN LY NGUOI DUNG ");
 
         jLabel2.setText("Tai khoan");
 
@@ -173,6 +184,22 @@ public class QLND extends javax.swing.JFrame {
 
         btnTim.setText("Tim");
 
+        lblDongHo.setText("00:01:12");
+
+        btnGhi.setText("Ghi");
+        btnGhi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGhiActionPerformed(evt);
+            }
+        });
+
+        btnDoc.setText("Doc");
+        btnDoc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDocActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -223,17 +250,27 @@ public class QLND extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(cboViTriCv, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(148, 148, 148)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnSapXep)
-                            .addComponent(btnXuat)
-                            .addComponent(btnNhap)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnNhap)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnDoc))
                             .addComponent(btnSua)
                             .addComponent(btnXoa)
-                            .addComponent(btnTim))
-                        .addGap(34, 34, 34))
+                            .addComponent(btnTim)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnXuat)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnGhi)))
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblTieuDe, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(83, 83, 83)
+                                .addComponent(lblDongHo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(9, 9, 9))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
@@ -241,12 +278,15 @@ public class QLND extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblTieuDe)
+                    .addComponent(lblDongHo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtTaiKhoan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnXuat))
+                    .addComponent(btnXuat)
+                    .addComponent(btnGhi))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -258,9 +298,14 @@ public class QLND extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(btnNhap)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addComponent(btnNhap))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(btnDoc)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSua)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -305,25 +350,24 @@ public class QLND extends javax.swing.JFrame {
 
     private void btnNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhapActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_btnNhapActionPerformed
 
     private void btnNhapMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNhapMouseClicked
         // TODO add your handling code here:
         // Neu kiem tra du lieu dung
         if (kiemTraDuLieu()) {
-           NguoiDung nd = getDuLieuTuForm();
-             
+            NguoiDung nd = getDuLieuTuForm();
+
 //             NguoiDung nd1 = new NguoiDung(txtTaiKhoan.getText(), 
 //                     txtMatKhau.getText(), txtEmail.getText(), 
 //                     rdoUser.isSelected() ? 1 : 2, chkTrangThai.isSelected(), 
 //                     rdoNam.isSelected() ? "Nam" : rdoNu.isSelected() ? "Nu" : "Gioi tinh khac", 
 //                     cboViTriCv.getSelectedItem().toString());
-
             service.add(nd);
-            
+
             doDuLieu();
-            
+
             JOptionPane.showMessageDialog(this, "Nhap du lieu thanh cong");
         }
     }//GEN-LAST:event_btnNhapMouseClicked
@@ -367,88 +411,109 @@ public class QLND extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Chon dong can xoa");
         }
     }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void btnDocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocActionPerformed
+        // TODO add your handling code here:
+        if (service.doc()) {
+            // Do du lieu len bang
+            doDuLieu();
+        } else {
+            JOptionPane.showMessageDialog(this, "Truot mon");
+        }
+    }//GEN-LAST:event_btnDocActionPerformed
+
+    private void btnGhiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGhiActionPerformed
+        // TODO add your handling code here:
+        if (service.ghi()) {
+            JOptionPane.showMessageDialog(this, "Ghi file thanh cong");
+        } else {
+            JOptionPane.showMessageDialog(this, "Ghi file that bai");
+        }
+    }//GEN-LAST:event_btnGhiActionPerformed
     private void doDuLieuLenForm(int rowIndex) {
-            // Lay doi tuong nguoi dung tu index
-           NguoiDung nd = listND.get(rowIndex);
-           txtTaiKhoan.setText(nd.getTenTaiKhoan());
-           txtEmail.setText(nd.getEmail());
-           txtMatKhau.setText(nd.getMatKhau());
-           
-           if (nd.getQuyen() == 1) {
-               rdoUser.setSelected(true);
-           } else {
-               rdoAdmin.setSelected(true);
-           }
-           // Set gia tri cho Radio
-           if (nd.getGioiTinh().trim().equalsIgnoreCase("Nam")) {
-               rdoNam.setSelected(true);
-           } else if (nd.getGioiTinh().trim().equalsIgnoreCase("Nu")) {
-               rdoNu.setSelected(true);
-           } else {
-               rdoKhac.setSelected(true);
-           }
-           // Set gia tri cho ComboBox
-           cboViTriCv.setSelectedItem(nd.getViTriCV());
-           // Set gia tri cho Check box
-           chkTrangThai.setSelected(nd.isTrangThai());
+        // Lay doi tuong nguoi dung tu index
+        NguoiDung nd = listND.get(rowIndex);
+        txtTaiKhoan.setText(nd.getTenTaiKhoan());
+        txtEmail.setText(nd.getEmail());
+        txtMatKhau.setText(nd.getMatKhau());
+
+        if (nd.getQuyen() == 1) {
+            rdoUser.setSelected(true);
+        } else {
+            rdoAdmin.setSelected(true);
+        }
+        // Set gia tri cho Radio
+        if (nd.getGioiTinh().trim().equalsIgnoreCase("Nam")) {
+            rdoNam.setSelected(true);
+        } else if (nd.getGioiTinh().trim().equalsIgnoreCase("Nu")) {
+            rdoNu.setSelected(true);
+        } else {
+            rdoKhac.setSelected(true);
+        }
+        // Set gia tri cho ComboBox
+        cboViTriCv.setSelectedItem(nd.getViTriCV());
+        // Set gia tri cho Check box
+        chkTrangThai.setSelected(nd.isTrangThai());
     }
+
     private void doDuLieu() {
-            // do du lieu tu dong dau tien
-            defaultTableModel.setRowCount(0);     
-            // gan gia tri cho list
-            listND = service.getList();
-        
-            for (NguoiDung nd : listND) {
-                defaultTableModel.addRow(new Object[] {nd.getTenTaiKhoan(), nd.getEmail(),
-                    nd.getMatKhau(), nd.getQuyen() == 1 ? "Nguoi dung" : "Admin", nd.getGioiTinh(),
-                    nd.isTrangThai(), nd.getViTriCV()});
-            }
-     }
-     
-     private boolean kiemTraDuLieu() {
-            if (txtTaiKhoan.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Bat buoc nhap thong tin tai khoan");
-                return false;
-            } else if (txtEmail.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Bat buoc nhap email");
-                return false;
-            } else if (txtMatKhau.getText().trim().isEmpty()) {
-                JOptionPane.showConfirmDialog(this, "Bat buoc nhap mat khau");
-                return false;
-            } 
-            return true;
-     }
-     
-     private NguoiDung getDuLieuTuForm() {
-           NguoiDung nd = new NguoiDung();
-            // Gan du lieu txtTaiKhoan cho thuoc tinh tentaikhoan
-            nd.setTenTaiKhoan(txtTaiKhoan.getText());
-            // Gan du lieu txtEmail cho thuoc tinh email
-            nd.setEmail(txtEmail.getText());
-            // Gan du lieu txtMatKhau cho thuoc tinh mk
-            nd.setMatKhau(txtMatKhau.getText());
-            // Gan du lieu quyen cho thuoc tinh quyen
-            if (rdoUser.isSelected()) {
-                nd.setQuyen(1);
-            } else {
-                nd.setQuyen(2);
-            }
+        // do du lieu tu dong dau tien
+        defaultTableModel.setRowCount(0);
+        // gan gia tri cho list
+        listND = service.getList();
+
+        for (NguoiDung nd : listND) {
+            defaultTableModel.addRow(new Object[]{nd.getTenTaiKhoan(), nd.getEmail(),
+                nd.getMatKhau(), nd.getQuyen() == 1 ? "Nguoi dung" : "Admin", nd.getGioiTinh(),
+                nd.isTrangThai(), nd.getViTriCV()});
+        }
+    }
+
+    private boolean kiemTraDuLieu() {
+        if (txtTaiKhoan.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Bat buoc nhap thong tin tai khoan");
+            return false;
+        } else if (txtEmail.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Bat buoc nhap email");
+            return false;
+        } else if (txtMatKhau.getText().trim().isEmpty()) {
+            JOptionPane.showConfirmDialog(this, "Bat buoc nhap mat khau");
+            return false;
+        }
+        return true;
+    }
+
+    private NguoiDung getDuLieuTuForm() {
+        NguoiDung nd = new NguoiDung();
+        // Gan du lieu txtTaiKhoan cho thuoc tinh tentaikhoan
+        nd.setTenTaiKhoan(txtTaiKhoan.getText());
+        // Gan du lieu txtEmail cho thuoc tinh email
+        nd.setEmail(txtEmail.getText());
+        // Gan du lieu txtMatKhau cho thuoc tinh mk
+        nd.setMatKhau(txtMatKhau.getText());
+        // Gan du lieu quyen cho thuoc tinh quyen
+        if (rdoUser.isSelected()) {
+            nd.setQuyen(1);
+        } else {
+            nd.setQuyen(2);
+        }
 //            nd.setQuyen(rdoUser.isSelected() ? 1 : 2);
-            if (rdoNam.isSelected()) {
-                nd.setGioiTinh("Nam");
-            } else if (rdoNu.isSelected()) {
-                nd.setGioiTinh("Nu");
-            } else {
-                nd.setGioiTinh("Gioi tinh khac");
-            }
+        if (rdoNam.isSelected()) {
+            nd.setGioiTinh("Nam");
+        } else if (rdoNu.isSelected()) {
+            nd.setGioiTinh("Nu");
+        } else {
+            nd.setGioiTinh("Gioi tinh khac");
+        }
 //            nd.setGioiTinh(rdoNam.isSelected() ? "Nam" 
 //                    : rdoNu.isSelected() ? "Nu" : "Gioi tinh khac");
-             nd.setTrangThai(chkTrangThai.isSelected());
-             
-             nd.setViTriCV(cboViTriCv.getSelectedItem().toString());
-             
-             return nd;
-     }
+        nd.setTrangThai(chkTrangThai.isSelected());
+
+        nd.setViTriCV(cboViTriCv.getSelectedItem().toString());
+
+        return nd;
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -485,8 +550,10 @@ public class QLND extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDoc;
     private javax.swing.ButtonGroup btnGGioiTinh;
     private javax.swing.ButtonGroup btnGRole;
+    private javax.swing.JButton btnGhi;
     private javax.swing.JButton btnNhap;
     private javax.swing.JButton btnSapXep;
     private javax.swing.JButton btnSua;
@@ -495,7 +562,6 @@ public class QLND extends javax.swing.JFrame {
     private javax.swing.JButton btnXuat;
     private javax.swing.JComboBox<String> cboViTriCv;
     private javax.swing.JCheckBox chkTrangThai;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -504,6 +570,8 @@ public class QLND extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblDongHo;
+    private javax.swing.JLabel lblTieuDe;
     private javax.swing.JRadioButton rdoAdmin;
     private javax.swing.JRadioButton rdoKhac;
     private javax.swing.JRadioButton rdoNam;
@@ -514,4 +582,34 @@ public class QLND extends javax.swing.JFrame {
     private javax.swing.JTextField txtMatKhau;
     private javax.swing.JTextField txtTaiKhoan;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void run() {
+        // chay dong ho
+        int giay = 0;
+        int phut = 0;
+        int gio = 0;
+        while (true) {
+            String chuDau = lblTieuDe.getText().substring(0, 1);
+            String sauXoa = lblTieuDe.getText().substring(1);
+            lblTieuDe.setText(sauXoa + chuDau);
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(QLND.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            giay = giay + 1;
+            if (giay == 60) {
+                phut = phut + 1;
+                giay = 0;
+            }
+            if (phut == 60) {
+                gio = gio + 1;
+                phut = 0;
+            }
+            lblDongHo.setText(gio+":"+phut+":"+giay);
+        }
+    }
 }

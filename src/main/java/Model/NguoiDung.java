@@ -4,13 +4,14 @@
  */
 package Model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  *
  * @author ThuyVT
  */
-public class NguoiDung implements Comparable<NguoiDung> {
+public class NguoiDung implements Serializable {
 
     private String tenTaiKhoan;
     private String matKhau;
@@ -128,9 +129,9 @@ public class NguoiDung implements Comparable<NguoiDung> {
         return Objects.equals(this.viTriCV, other.viTriCV);
     }
 
-    @Override
-    public int compareTo(NguoiDung o) {
-        return this.getTenTaiKhoan().compareTo(o.getTenTaiKhoan());
-    }
+//    @Override
+//    public int compareTo(NguoiDung o) {
+//        return this.getTenTaiKhoan().compareTo(o.getTenTaiKhoan());
+//    }
 
 }
